@@ -1,0 +1,232 @@
+{
+  "seed": 42,
+  "created_at": "2026-09-13T18:47:16",
+  "question": "2026 国赛 A 题 问题 4",
+  "inputs_sha256": {
+    "附件1.xlsx": {
+      "path": "附件/附件1.xlsx",
+      "sha256": "7ef32870abeef420b89560b2530ff60dfe4255917805151d89988d0311af9dd7",
+      "exists": true
+    },
+    "附件2.xlsx": {
+      "path": "附件/附件2.xlsx",
+      "sha256": "5563acbfa4b4afb10cc6c03e2207e5369bf39da27576672aff14cc5c32e704af",
+      "exists": true
+    },
+    "A题.pdf": {
+      "path": "A题.pdf",
+      "sha256": "052d8014bff5727c019b72e44fdffaf5c145ce04050dd938baaf3527db331736",
+      "exists": true
+    },
+    "result4.xlsx": {
+      "path": "附件/附件3/result4.xlsx",
+      "sha256": "86e9300ffa3d30c43de895ea6723da943e85b8740b137bcae5af7107f076eeac",
+      "exists": true
+    }
+  },
+  "script_sha256": {
+    "solver_q4.py": "bd4cc9e5086b10f1e0baae09cf7352165b47f04e8c838162ea2ccdc9ac4b58a0",
+    "run_q4.py": "b9d3f826b38a4d26da2cf2534da7a1fd429fbff922963d404159c3520d400091"
+  },
+  "config": {
+    "N": 400,
+    "dxi": 0.0025,
+    "dt_I_s": 1.25,
+    "dt_II_s": 5.0,
+    "t_switch_s": 14400.0,
+    "dt_out_s": 60.0,
+    "R_mode": "shrink（附件 2 分段线性，路线 (a)）",
+    "geo_layer": "nplus1（1/R^{n+1,2}，步内常数、不进 Picard）",
+    "face_rule": "arith（界面系数 = 相邻节点算术平均）",
+    "props": "附录 4",
+    "bc": "robin（口径 A）",
+    "T_mode": "prescribed（T := T_a(t)，主口径）",
+    "picard_tol": 1e-12,
+    "picard_max": 100,
+    "t_dry_criterion": "C_max(t) ≤ 0.15 kg/kg（首个满足的内部步）",
+    "margin_s": 10800.0,
+    "t_cap_s": 1209600.0,
+    "n_steps": 47337,
+    "t_final_s": 193485.0,
+    "status": "ok"
+  },
+  "model_choices": {
+    "equations": "∂C/∂t|_ξ = (1/(R²ξ))∂/∂ξ(ξD∂C/∂ξ)；ρ(C)c_p(C)∂T/∂t|_ξ = (1/(R²ξ))∂/∂ξ(ξk∂T/∂ξ)（Q4-9 / Q4-12b）",
+    "props_appendix4": "ρ=760+90C；c_p=1850+2150C/(C+1)；k=0.12+0.20C/(C+1)；D=4.2e-4·e^(−0.30/C)·e^(−3850/T)",
+    "D_T_unit_declaration": " D 的指数项 e^(−3850/T) 中 T 必须用热力学温度 K（输入 28 ℃ 用 301.15 K）；输出阶段才转 ℃",
+    "h_hm_source": "附录 4 未给  沿用附录 2 的 h=25 W/(m²·K)、h_m=8e-7 m/s（唯一可溯来源的推断，Q4-A4，非题给）",
+    "R_source": "附件 2 的 145 行半径序列，分段线性插值；t>259200 s 冻结 1.198 cm",
+    "driver": "附件 1 分段线性插值 [0,14400] s；t>14400 s 冻结 T_a=50.165 ℃、C_a=0.04986 kg/kg",
+    "initial": "T=28 ℃、C=2.55 kg/kg 均匀，t=0 起算（不承接 Q3 终态）",
+    "D_eval": "对数空间 log D = log(4.2e-4) − 0.30/C − 3850/T(K)，再 exp；防卫下界 D_floor=1e-25 m²/s（非干扰：低于双精度相对分辨率）",
+    "D_floor": 1e-25,
+    "picard": "单列 Picard（预设 T 口径）；累积项右端恒取 n 层（R3 条款）、边界驱动取 n+1 层、几何因子取 n+1 层且不进 Picard",
+    "mapping": "ξ 向 PCHIP（主）+ 线性（对照）+ FV-Hermite（互校）；表面/中心列不插值",
+    "termination": "首个 C_max ≤ 0.15 的内部步 + 10800 s 余量"
+  },
+  "wall_s": 21.928635358810425,
+  "outputs": {
+    "result4.xlsx": "d03c2d52f51815f5fa90707856ab73a1b658209249672facda9b37d8bf7a7a33",
+    "result4_wide.xlsx": "7b48ee8aa0405852c1845bbd4e305c95602a0127713ed39b2868dbee10418d16",
+    "result4_full.npz": "a1454e421ea3837a716205345d0fb4b8404975c1d036b4e56ee608386d28856f",
+    "result4_full.csv": "72107fc17aeb42427c24ee5497d85aa38c6890e102a1c3429909dc44efa445ac",
+    "q4_table6.csv": "48df4ad10854ed348af62ea0d345e8e69de78b35764961b549065cd6e6563162",
+    "q4_xi_profile.npz": "ff90e0955c5e439fdf424780c567310c8957661a53a9c78f820935e65de5870a",
+    "q4_xi_profile.csv": "7e8050f22e43b2cabcb7f0d84634c861f97a2699a9f3a96f1ef7d5f0325a7418",
+    "q4_cmax_trajectory.npz": "a9096e07cb2ec5c75b9ed7c2747b9027a7f1eb9a857e0976c2f8da0247e551f5",
+    "q4_cmax_crossing_window.csv": "fe1c11913d5c3a91b1509c88e0994dab08d7d16922da15add8c7ce83b6a791c7",
+    "q4_cmax_60s.csv": "c4f50231192fefdc95f12b4d1c46ff38268dea7aa4290cabcb94fbb3f950ea94",
+    "q4_mass_audit.csv": "1bb302b7273d4c851a3b7e777c4bc21c5d85ed6d68e037e7c95b576bcc22bcb8",
+    "q4_audit_summary.json": "8869fea68c182d3d545566928cec0d91b9e4f792f528a485c6653048de1ec97e",
+    "q4_mapping_uncertainty.csv": "d12edc44361c086c74d450437a5a87962b5d6db51aa8ce31c93b6eff52ce68e0",
+    "results4.json": "eab47ab28b961daebf0a9cb8d74a3beed149d53b230d1d2a492f0fca199b2285"
+  },
+  "uncertainty": {
+    "t_dry": {
+      "main_reported_component": "grid_contribution_s",
+      "recommended_statement": "t_dry = 182685.0 s = 50.74583333333333 h（首个 C_max ≤ 0.15 的内部步；线性/三次 Hermite 未舍入值另见 t_dry.t_nominal_linear_s = 182683.60919123166 / t_dry.t_nominal_hermite_s = 182683.60915932796）。数值不确定度主报 ±9.119665423571632 s（≈ ±9.1×10⁰ s = 0.0025332403954365645 h，Q4 自己的实测网格项：生产档 N=400 vs 更细一档 N=800，与 Q2 的「生产 vs 更细一档」口径严格同构）；±19.35239748225507 s 为灵敏度说明（= 1/|dCmax_dt_at_crossing| × 假定场值误差 1e-5 kg/kg），不得单独当作 t_dry 的不确定度（本项是网格项的 2.1220512577396597 倍，比网格项大  单用它会高估）；模型/数据不确定度另以区间 [46.69, 54.07] h（E1/E2 方向性上界，非统计置信区间）表述。另登记网格敏感度上界（粗一档 N=200 vs 生产 N=400）= 30.533783463508257 s（见 grid_sensitivity_upper_bound_s；为网格项的 3.3481254021213847 倍）。不得声称 4 位小数有效（docs/Q4_建模文档.md §9.2）。",
+      "grid_contribution_s": 9.119665423571632,
+      "grid_contribution_note": "Q4 有自己的网格收敛研究，本键由它独立复算得出（不是从 Q2 继承、不是硬编码）。复算过程：读 results/q4_convergence.json  A_grid_independence.t_dry_lin_h（该档 config: dt1 = 1.25、dt2 = 5.0、t_switch = 14400.0，只改 N，与 Q2 网格项的「只改 Δr」口径相同），取 N=400  50.74544699756435 h（生产档，逐位等于 results4.json  t_dry.t_nominal_linear_h）、N=800  50.74798023795979 h（更细一档）；|50.74798023795979 − 50.74544699756435| × 3600 = 9.119665423571632 s。口径为什么是 N=400↔N=800（生产 vs 更细一档）：Q2 的生产网格是 N=200，其网格项 = |t_dry(N=200) − t_dry(N=400)| 即「生产 vs 更细一档」；Q4 的生产网格是 N=400（results4.json  meta.config.N），严格同构的量为 |t_dry(N=400) − t_dry(N=800)|  本键取此。为何用 t_dry_lin_h 而非 t_dry_h：Q2 网格项取的就是线性插值定位（results/q2_error_budget.json  …space_grid_tail_measured.t_dry_dr_0_01_cm 在 src/verify_q2_error_budget.py 中读的是 q2_parts 的 t_dry_linear），同口径才可比较；换用 t_dry_h（首个满足步）序列时同一对的差为 10.000000000007958 s。旁证：同档 observed_order_p = [2.2303467063234215, 2.3516775239761696]（p > 2，加密仍在收敛）；t_dry_spread_h = 0.03611111111111143（四档 step 序列极差 = 130.0 s，同值见 results/q4_error_budget.json  E4_discrete.t_dry_grid_spread_h）。",
+      "grid_sensitivity_upper_bound_s": 30.533783463508257,
+      "grid_sensitivity_upper_bound_note": "= |t_dry_lin_h(N=200) − t_dry_lin_h(N=400)| × 3600 = |50.74544699756435 − 50.73696539104671| × 3600 = 30.533783463508257 s（同档 config: dt1 = 1.25、dt2 = 5.0、t_switch = 14400.0，只改 N）。这是「粗一档 vs 生产」的网格敏感度上界，不是主报项 —— 它含更粗档 N=200 自身的误差，不能当作生产解 N=400 的网格不确定度；主报项 = 生产 vs 更细一档 = grid_contribution_s = 9.119665423571632 s（本键为它的 3.3481254021213847 倍）。主报改用与 Q2 严格同构的 N=400↔N=800，本键作为独立键保留此值以便溯源与保守对照。旁证（step 序列同一对）= 10.000000000007958 s。",
+      "time_step_contribution_s": null,
+      "time_step_contribution_note": "置 null：Q4 没有生产网格上的 Δtt_dry 落盘项，故不移植、不新算（本项目纪律：不得自算无落盘依据的数）。落盘事实三条：① results/q4_convergence.json  B_time_convergence.config.N = 200（不是生产网格 N=400），其 t_dry_lin_h 六档序列 I20_II60…I0.625_II2.5 的极差 = 0.04791666666666572 h = 172.5 s（含 I20_II60 等粗档，口径是 spread 不是 contribution；逐位等于 results/q4_error_budget.json  E4_discrete.t_dry_dt_spread_h）；② A_grid_independence.t_dry_spread_h = 0.03611111111111143 h（= 130.0 s，四档网格 spread）；③ Q2 的对应键 time_step_contribution_s = 2.9718922144239177 s 出自「Δt_II 1/8 vs 1/16 的 C_max 轨迹最大偏差 × 实测放大系数」，Q4 无同口径落盘量。建议：由编程手在 N=400 上补一对 Δt 加密（或明确以 B_time_convergence 的 N=200 口径为准）后回填本键。",
+      "localization_only_s": 3.1903706258162856e-05,
+      "localization_only_note": "Q4 自己的线性 vs 三次 Hermite 定位差（= 本文件 t_dry.localization_error_s）；比网格项小 6 个量级。",
+      "field_error_sensitivity_s_per_kgkg": 1935239.748225507,
+      "field_error_sensitivity_note": "= 1/|t_dry.dCmax_dt_at_crossing|（实测跨越点斜率 5.167318420970513e-07 kg/(kg·s)）= 灵敏度换算系数，不是不确定度本身；逐位等于本文件 t_dry.condition_number_s_per_kgkg（Q4 的规范位置在 t_dry 顶层，本键仅为与 Q2 键名对齐而设）。",
+      "field_error_at_1e-5_kgkg_s": 19.35239748225507,
+      "field_error_at_1e-5_kgkg_note": "= field_error_sensitivity_s_per_kgkg × 1e-5 kg/kg（假定场值误差，不是实测误差）—— 仅灵敏度说明，非主报项；本项是主报网格项的 2.1220512577396597 倍（比网格项大  单用它当 t_dry 的不确定度会高估）。本键承载的正是原 t_dry.uncertainty.field_error_1e-5_kgkg_to_time_s（旧主报值），已降格；同名旧键仍在顶层保留（见 legacy_compat_note）。",
+      "model_data_uncertainty_interval_h": [
+        46.69,
+        54.07
+      ],
+      "model_data_uncertainty_note": "来源 results/q4_error_budget.json  interval_statement（逐位照抄该字符串中的 [46.69, 54.07] h）：E1（缺潜热  t_dry 偏短 6.5 %，上端 = base×(1+E1)，E1_relative = 0.06542401918289281）与E2（1D 无限长  偏长 ≤ +8.0 %，下端 = base×(1−E2)，E2.upper_bound_pct = 8.0）的方向性上界，非统计置信区间；base = baseline_t_dry_h = 50.74544699756435。 与 Q2 的 model_data_uncertainty_interval_h 口径不同（Q2 的是驱动平台情景之差），不要混用。",
+      "doc_consistency_note": " 待裁决 §9.2 的条件数与 ±15.2 s、§9.4 余量表的 ±15 s 均为设计期值（k_lump 由预研原型两个诊断点推出，文档自述属③层冒烟判据）；实测条件数为 1935239.748225507 s per (kg/kg)、场值误差 1e-5 kg/kg 的时间当量为 19.35239748225507 s（即设计期 15.2 s 的 1.273 倍）。本块已按实测落盘（数值不确定度主报项 = 实测网格项 9.119665423571632 s，非灵敏度项）；文档侧的更正见本轮跨问口径一批改的文档改动。",
+      "field_to_time_factor_s_per_kgkg": 1935239.748225507,
+      "field_to_time_factor_s_per_kgkg_status": "本键为对齐 Q2 键名而设；Q4 的规范位置是 t_dry.condition_number_s_per_kgkg（逐位同值）。 不要与 Q2 的同名键 953600.0 混淆 —— 那是 Q2 的设计期名义值（已废弃）。本键值是实测跨越点斜率倒数，可用。",
+      "deprecated": {
+        "field_error_1e-5_kgkg_to_time_s": 19.35239748225507,
+        "field_error_1e-4_kgkg_to_time_s": 193.5239748225507,
+        "bracket_width_s": 5.0,
+        "localization_s": 3.1903706258162856e-05,
+        "statement": "t_dry 不得声称 4 位小数有效：场值误差 1e-5 kg/kg  19.4 s；定位括住宽 5 s；缩小 Δt 不改善 t_dry（它由场值误差决定，§9.2 推论 2）",
+        "why": "原 uncertainty 块把灵敏度换算（19.35239748225507 s = ∂t_dry/∂C_max × 假定场值误差 1e-5 kg/kg）与定位括住宽（5.0 s）、定位误差（3.1903706258162856e-05 s）平列，并以 statement 宣称「t_dry 不得声称 4 位小数有效：场值误差 1e-5 kg/kg  19.4 s」—— 那 19.35239748225507 s 是灵敏度换算、不是 t_dry 的数值不确定度（它是「假定场值误差 1e-5 kg/kg」下换算出来的，不是本问实测的离散误差）；Q4 自己的实测网格项（主报项，生产档 vs 更细一档）= 9.119665423571632 s。2026-09-11 跨问口径预检确认该根因已在 Q2/Q3/Q4 复制 3 次；本块按 Q2 的分层结构改写，原键值全部保留（顶层同名 + 本 deprecated 块），未删除。"
+      },
+      "legacy_compat_note": "顶层 bracket_width_s / localization_s / field_error_1e-5_kgkg_to_time_s 三个键按原名原值保留，唯一原因是 src/build_answer_bundle.py 直接按名读取（_unc[\"field_error_1e-5_kgkg_to_time_s\"]、_unc[\"localization_s\"]、_unc[\"bracket_width_s\"]），移走或改名会使该脚本当场 KeyError。它们不是 t_dry 的数值不确定度：主报项见 grid_contribution_s。",
+      "bracket_width_s": 5.0,
+      "localization_s": 3.1903706258162856e-05,
+      "field_error_1e-5_kgkg_to_time_s": 19.35239748225507,
+      "field_error_1e-4_kgkg_to_time_s": 193.5239748225507
+    },
+    "mapping": {
+      "csv": "results/q4_mapping_uncertainty.csv",
+      "max_abs_diff_pchip_linear": 7.64001682718174e-06,
+      "max_abs_diff_pchip_fvhermite": 1.3322676295501878e-15,
+      "per_column_max": {
+        "0.0": 0.0,
+        "0.1": 2.4434503433923283e-06,
+        "0.2": 2.454440261701052e-06,
+        "0.3": 2.4863865220048353e-06,
+        "0.4": 2.56847886825895e-06,
+        "0.5": 2.732563180174452e-06,
+        "0.6": 3.0492568536821807e-06,
+        "0.7": 3.5723887203964466e-06,
+        "0.8": 4.280313040894157e-06,
+        "0.9": 5.1121652320240685e-06,
+        "1.0": 6.227832556326973e-06,
+        "1.1": 7.64001682718174e-06
+      },
+      "note": "PCHIP（主）与线性（对照）之差即映射不确定度（§8.4 第 2 条）；FV-Hermite 为节点导数取自 FV 通量差商的自实现，用于与 PCHIP 互校。"
+    },
+    "grid_and_time": {
+      "grid_N400_vs_N800_t_ge_3600s_kgkg": 1.7714986100494934e-05,
+      "grid_N400_vs_N800_fullwindow_kgkg": 0.0005111637973786998,
+      "grid_fullwindow_dominated_by": "t=60 s 的初始窗口（δ(60 s)=2.507×10⁻² cm ≈ 5.01Δr@N=400；本生产配置 N=400 在该窗口未达 ② 层线）",
+      "dt_prod_vs_finest_t_ge_3600s_kgkg": 3.6693796523601385e-05,
+      "dt_prod_vs_finest_fullwindow_kgkg": 0.0007044343336861658,
+      "layer2_tol_kgkg": 5e-05,
+      "verdict": "t ≥ 1 h：Δξ 与 Δt 均 < 5×10⁻⁵（② 层线）；t < 1 h 不支撑第 4 位（G5 口径降级，已在 results4.json 分层声明）",
+      "t_dry_grid_spread_h": 0.03611111111111143,
+      "t_dry_dt_spread_h": 0.04791666666666572
+    },
+    "model_error": {
+      "E1_latent_heat": {
+        "method": "0-D 集总对照（§11.2 (Q4-34)）；`C_s(t)` 与 `R(t)` 取自主模型，不含新的水分模型。两种读法：(a) 瞬时 δT(t)（准稳态表面平衡）；(b) 平均 ΔT（先把蒸发功率在干燥窗内做时间平均，再取常数偏移）。",
+        "borrowed_parameters": {
+          "dH_vap_J_per_kg": 2260000.0,
+          "rho_d_kg_m3": 278.7323943661972,
+          "note": "题目未给，借自文献 / 附录 4 折算式；只作量级估计，绝不进交付数值"
+        },
+        "delta_T_qs_max_K": 49.871263923029545,
+        "delta_T_qs_max_at_s": 0.0,
+        "delta_T_qs_final_K": 0.04682959752615576,
+        "P_evap_avg_W_per_m": 6.075616613173865,
+        "delta_T_avg_K": 1.9339288326357207,
+        "reading_a_instantaneous": {
+          "t_dry_h": null,
+          "reached_within_s": 259200.0,
+          "C_max_final": 0.6403784631141571,
+          "verdict": "在 72 h 窗口内未达标",
+          "note": "瞬时读法在早段把表面蒸发通量按 `C_s(0) = 2.55` 全额计入，δT 峰值 49.9 K，材料温度被压到远低于初值 —— 这是 0-D 集总的失效模式（真实药材有内部导热供热，表面不会瞬间掉到湿球温度）。该读法只作定性说明，不作为 E1 数值。"
+        },
+        "reading_b_averaged": {
+          "t_dry_h": 54.065418095377474,
+          "reached_within_s": 259200.0,
+          "C_max_final": 0.12739762535739438
+        },
+        "E1_relative": 0.06542401918289281,
+        "E1_direction": "t_dry 偏短（潜热缺失  温度偏高  D 偏高）",
+        "E1_adopted": "读法 (b)（平均 ΔT）；读法 (a) 的结果如实登记但不采用",
+        "not_main_result": true,
+        "note": "E1 的修正结果不得作为主结果（§11.6 纪律 3）"
+      },
+      "E2_end_face": {
+        "R_over_L": 0.08,
+        "area_ratio": 1.08,
+        "upper_bound_pct": 8.0,
+        "direction": "t_dry 偏长（1D 无限长漏掉端面传质）",
+        "note": "与 E1/E3 方向相反、部分相消（§11.3）；题目未给轴向数据，各向同性收缩下 R/L 不变。"
+      },
+      "E3_h_hm": {
+        "h_hm_3x3_spread_h": 4.3497875840525,
+        "h_hm_3x3_spread_pct": 8.747126475468475,
+        "direction": "双向",
+        "borrowed_params": false
+      },
+      "E4_discrete": {
+        "source": "results/q4_convergence.json",
+        "direction": "双向",
+        "grid_N400_vs_N800_t_ge_3600s": 1.7714986100494934e-05,
+        "grid_N400_vs_N800_fullwindow": 0.0005111637973786998,
+        "dt_prod_vs_finest_t_ge_3600s": 3.6693796523601385e-05,
+        "dt_prod_vs_finest_fullwindow": 0.0007044343336861658,
+        "t_dry_grid_spread_h": 0.03611111111111143,
+        "t_dry_dt_spread_h": 0.04791666666666572,
+        "statement": "t ≥ 1 h：Δξ 与 Δt 的联合离散不确定度均 < 5×10⁻⁵（② 层线）；t < 1 h：由初始边界层主导，最大差 5.11e-04（表面列 @ t=60 s）"
+      },
+      "E5_R_interp": {
+        "R_quantization_m": 1e-05,
+        "pchip_monotone_ok": true,
+        "pchip_range_ok": true,
+        "max_abs_diff_linear_vs_pchip_m": 6.717068200887133e-05,
+        "max_rel_diff": 0.0034749946862479594,
+        "quant_equivalent_pct": 0.08347245409015026,
+        "direction": "双向，小",
+        "note": "量化台阶 0.001 cm = 0.0835 % of R_min；PCHIP 通过 `0.01198 ≤ R ≤ 0.02`且 `Ṙ ≤ 0` 逐点校验（不合格则判 PCHIP 不合格，§12.2 组 5）。主口径用分段线性（§4.3），PCHIP 仅作对照。"
+      },
+      "E6_driver": {
+        "ta_scenario_spread_h": 0.7881796182034577,
+        "ca_scenario_min_h": 50.625876407401506,
+        "ca_scenario_max_h": 51.414056025604964,
+        "direction": "偏长为主（冻结压低后期驱动力）",
+        "borrowed_params": false
+      },
+      "interval_statement": "主结果 t_dry = 50.7454 h（E0 主情景、N=400、Δt=1.25/5 s）；考虑 E1（本模型缺潜热  t_dry 偏短 6.5 %  真值变长，上端 = base×(1+E1)）与 E2（本模型 1D 无限长  t_dry 偏长 ≤ +8.0 %  真值变短，下端 = base×(1−E2)）的方向性偏差后，合理区间约为 [46.69, 54.07] h（方向性上界，非统计置信区间）。",
+      "reporting_rule": "E1–E4 分别报告，不做「总误差 = 各项相加」（方向不同、量级不同、互不独立）；论文以区间 + 方向表述（§11.1）；E1 的借用参数结果只进误差分析节。"
+    },
+    "note": "本块只登记口径；数值在验证脚本产出后回填",
+    "backfilled_at": "2026-09-13T18:47:16"
+  },
+  "reproduce": "python src/run_q4.py（从项目根以相对路径可跑；seed=42 固定）"
+}

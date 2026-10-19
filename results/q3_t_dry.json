@@ -1,0 +1,277 @@
+{
+  "meta": {
+    "question": "Q3 烘干时间（搭 Q2 的车，不独立求解）",
+    "generated_at": "2026-09-11T23:33:11",
+    "seed": 42,
+    "python": "3.13.7",
+    "numpy": "2.4.6",
+    "script": "src/q3_from_q2.py",
+    "script_sha256": "7f1967cf60dfa24a4c6ee6215f88d48be1cd48e135c9ed3685541c4bd04a9bf4",
+    "wall_s": null,
+    "dry_run": false,
+    "end_policy": "t_dry",
+    "config": {
+      "c_dry_kgkg": 0.15,
+      "dt_out_s": 60.0,
+      "r_out_cm": [
+        0.0,
+        0.1,
+        0.2,
+        0.30000000000000004,
+        0.4,
+        0.5,
+        0.6000000000000001,
+        0.7000000000000001,
+        0.8,
+        0.9,
+        1.0,
+        1.1,
+        1.2000000000000002,
+        1.3,
+        1.4000000000000001,
+        1.5,
+        1.6,
+        1.7000000000000002,
+        1.8,
+        1.9000000000000001,
+        2.0
+      ],
+      "r_tab5_cm": [
+        0.0,
+        0.5,
+        1.0,
+        1.5,
+        2.0
+      ],
+      "tab5_interval_h": 6.0,
+      "margin_s": 10800.0,
+      "t_cap_s": 1209600.0,
+      "sheet_name": "Sheet1",
+      "header_a1": "时间\\到药材中心的距离"
+    }
+  },
+  "inputs_sha256": {
+    "results/q2_cmax_trajectory.npz": "30017b2a9f15df219de00b7e865163490c0077f67ab76afcafbbcd35e874779b",
+    "results/q2_field_timeseries.npz": "24798f0a27207d82744eb3a97f33158ff6a038048034ce49d37cfacae56c2b34",
+    "results/results2.json": "9e6ebfbf91a31dd706e06c21808eedfd5ca6f4c35a8c78bc8d75d408f3cedee6"
+  },
+  "criterion": {
+    "statement": "药材各处水分浓度 < 0.15 kg/kg；C_max(t) = max_r C(r,t)，t_dry = inf{t>0 : C_max(t) < 0.15}",
+    "relation_lt_le": "C_max 连续且横截 → `<` 与 `≤` 的 inf 相等；操作上取首个 C_max ≤ 0.15 的内部步（Q2 建模文档 §11.1）",
+    "reference": "docs/Q2_建模文档.md §11.1 (Q2-26)(Q2-27)"
+  },
+  "t_dry": {
+    "value_s": 205590.05870571267,
+    "value_h": 57.108349640475744,
+    "value_d": 2.379514568353156,
+    "value_h_reported": "57.11",
+    "bracket": {
+      "t_before_s": 205590.0,
+      "C_max_before": 0.1500000172414078,
+      "t_after_s": 205590.125,
+      "C_max_after": 0.14999998052988728,
+      "width_s": 0.125
+    },
+    "first_le_step": {
+      "n_star": 2451120,
+      "t_s": 205590.125,
+      "C_max": 0.14999998052988728
+    },
+    "interpolation": "线性（标称）+ 三次 Hermite（定位误差估计）",
+    "t_dry_hermite_s": 205590.05870569454,
+    "localization_error_s": 1.8131686374545097e-08,
+    "dCmax_dt_at_crossing": -2.9369216419938837e-07,
+    "uncertainty": {
+      "main_reported_component": "grid_contribution_s",
+      "recommended_statement": "t_dry = 205590.05870571267 s = 57.108349640475744 h（未舍入值）。**数值**不确定度**主报 ±139.7077737521031 s（≈ ±1.4×10² s = 0.03880771493113975 h，实测网格项，**继承自 Q2**）**；±34.0492570758918 s 为**灵敏度说明**（= 1/|dCmax_dt_at_crossing| × **假定**场值误差 1e-5 kg/kg），**不得单独当作 t_dry 的不确定度**（会比网格项小 4.103107842873365 倍）；**模型/数据**不确定度另以情景区间 [56.974667355642666, 57.86558261373112] h 表述。不得声称 4 位小数有效（docs/Q2_建模文档.md §11.3；本文件与 results2.json → t_dry.uncertainty 同口径）。",
+      "grid_contribution_s": 139.7077737521031,
+      "grid_contribution_note": "**为什么继承（不是本问自算）**：Q3 **不独立求解** —— `src/q3_from_q2.py` 直接读 Q2 的水分场首达时刻（本文件 meta.script = \"src/q3_from_q2.py\"，inputs_sha256 含 results/results2.json），`results/q3_t_dry.json → t_dry.value_s` 与 `results/results2.json → t_dry.value_s` **逐位相同**（均为 205590.05870571267）⇒ Q3 复用 Q2 的场与网格，**没有自己的网格收敛研究**，网格项只能与 Q2 同源、逐位继承。**读入来源（不硬编码）**：results/q2_error_budget.json → t_dry_uncertainty.contributions.space_grid_tail_measured.abs_diff_N200N400_s（= conservative_uncertainty_s = |t_dry_dr_0_01_cm − t_dry_dr_0_005_cm| = |205591.1259141436 − 205730.8336878957| = 139.7077737521031，同块 t_dry_dr_0_02_cm = 205258.45325482177）；该档**只改 Δr**（Δt_I=1/16、Δt_II=1/2 与灵敏度口径逐项相同），与 Q3 的生产配置同为 N=200。",
+      "time_step_contribution_s": 2.9718922144239177,
+      "time_step_contribution_note": "**同样继承自 Q2**（Q3 与 Q2 共用时间步与场，理由同 grid_contribution_note）。来源 results/q2_error_budget.json → t_dry_uncertainty.contributions.time_step_dt_II.implied_t_s（= Δt_II 1/8 vs 1/16 的 C_max 轨迹最大偏差 8.728214562214731e-07 × 实测放大系数 3404925.7075891797）；比网格项小两个量级 ⇒ **缩小 Δt 不改善 t_dry**（Q2 建模文档 §11.3 推论 2）。",
+      "localization_only_s": 1.8131686374545097e-08,
+      "localization_only_note": "Q3 自己的定位误差（线性 vs 三次 Hermite）—— 与本文件 t_dry.localization_error_s 同值，亦与 results2.json → t_dry.uncertainty.localization_only_s 逐位同值；比网格项小 10 个量级。",
+      "field_error_sensitivity_s_per_kgkg": 3404925.7075891797,
+      "field_error_sensitivity_note": "= 1/|t_dry.dCmax_dt_at_crossing|（实测跨越点斜率 2.9369216419938837e-07 kg/(kg·s)）= **灵敏度换算系数，不是不确定度本身**。Q3 与 Q2 同场 ⇒ 与 results2.json → t_dry.uncertainty.field_error_sensitivity_s_per_kgkg 逐位同值，亦与 results/q2_error_budget.json → t_dry_uncertainty.amplification_measured_s_per_kgkg 逐位同值。**原写在本文件 uncertainty.factor_s_per_kgkg，已迁入 deprecated**。",
+      "field_error_at_1e-5_kgkg_s": 34.0492570758918,
+      "field_error_at_1e-5_kgkg_note": "= field_error_sensitivity_s_per_kgkg × 1e-5 kg/kg（**假定**场值误差，不是实测误差）—— **仅灵敏度说明，非主报项**；单用它当 t_dry 的不确定度会比实测网格项小 4.103107842873365 倍。**本键承载的正是原 uncertainty.t_dry_uncertainty_s = 34.0492570758918（旧主报值）**，按 Q2 的处置降格（对照 results2.json → t_dry.uncertainty.field_error_at_1e-5_kgkg_s，逐位同值）。",
+      "model_data_uncertainty_interval_h": [
+        56.974667355642666,
+        57.86558261373112
+      ],
+      "model_data_uncertainty_note": "驱动平台情景（E0/E1/E2 的 4×4 外推口径）之差，**继承自 Q2**。来源 results/q2_error_budget.json → t_dry_uncertainty.contributions.driver_scenario.interval_h（逐位同值）；**与上面的数值不确定度不是同一个东西**，须分开表述（Q2 建模文档 §14.3 第 16 条）。",
+      "doc_consistency_note": "✅ **无待裁决项**：docs/Q2_建模文档.md §11.3 已于 2026-09-11 按实测网格项更正 —— 推论 1 现写「本算例：t_dry = 57.11 h ± 139.7077737521031 s（≈ ±0.04 h，实测网格项）」，并明确 ±34.0492570758918 s 只能作灵敏度说明、不得单独当作不确定度（其第 5 条待确认项同此）。故本块与文档同口径。**论文取数**须以 results2.json → t_dry.uncertainty.grid_contribution_s 与本文件 → t_dry.uncertainty.grid_contribution_s 为准（两者逐位同值）。",
+      "field_to_time_factor_s_per_kgkg": 953600.0,
+      "field_to_time_factor_s_per_kgkg_status": "**已废弃（勿用）** —— docs/Q2_建模文档.md §11.3『修订前口径（留痕，勿再用）』的设计期估计：LDF 单点冻结 D(0.15)（基于 |dC_max/dt| = 1.0486417213573925e-06）；实测斜率是它的 0.28006484778053675 倍 ⇒ **低估 3.571 倍**。原写在本文件 uncertainty.doc.factor_s_per_kgkg，迁移留痕见 deprecated。**不得作为 t_dry 的精度口径**。",
+      "deprecated": {
+        "uncertainty.assumed_field_error_kgkg": 1e-05,
+        "uncertainty.abs_dCmax_dt_kgkg_per_s": 2.9369216419938837e-07,
+        "uncertainty.factor_s_per_kgkg": 3404925.7075891797,
+        "uncertainty.t_dry_uncertainty_s": 34.0492570758918,
+        "uncertainty.t_dry_uncertainty_h": 0.0094581269655255,
+        "uncertainty.measured": true,
+        "uncertainty.ratio_vs_doc": 0.28006484778053675,
+        "uncertainty.localization_only_s": 1.8131686374545097e-08,
+        "uncertainty.doc": {
+          "factor_s_per_kgkg": 953600.0,
+          "t_dry_uncertainty_s": 10.0,
+          "note": "建模文档 §11.3 名义值（基于 |dC_max/dt| = 1.0486417213573925e-06），仅作对照，不用作结论"
+        },
+        "uncertainty.statement": "由**实测**跨越点 |dC_max/dt| = 2.936922e-07 kg/(kg·s) → ∂t_dry/∂C_max = 3.404926e+06 s per (kg/kg)（§11.3 名义值 9.536000e+05，实测为其 3.571 倍）；场值误差 1e-05 kg/kg → t_dry 不确定度 ±34.0 s（≈ ±0.0095 h）。**缩小 Δt 不再改善**（§11.3）。",
+        "why": "原 uncertainty 块把**灵敏度换算**（34.0492570758918 s = 1/|dC_max/dt| × 假定场值误差 1e-5 kg/kg）直接命名为 t_dry_uncertainty_s 并配 statement『场值误差 1e-05 kg/kg → t_dry 不确定度 ±34.0 s』，**无任何「这是灵敏度、不是不确定度」的限定** ⇒ 会被当作 t_dry 的数值不确定度报出，比实测网格项 139.7077737521031 s 小 4.103107842873365 倍（**低估 4.1 倍**）。2026-09-11 跨问口径预检确认该根因已在 Q2/Q3/Q4 复制 3 次；本块按 Q2 的分层结构改写，原键值**全部保留在本 deprecated 块内，未删除**。"
+      }
+    },
+    "t_end_s": 216390.125,
+    "margin_s": 10800.0,
+    "status": "ok",
+    "source": {
+      "trajectory": "results/q2_cmax_trajectory.npz",
+      "summary_json": "results/results2.json",
+      "crosscheck_abs_diff_s": 0.0,
+      "independent_recompute": true
+    },
+    "monotonicity_before_crossing": {
+      "n_rise_steps_any_sign": 9067,
+      "n_rise_steps_over_tol": 0,
+      "monotone_tol": 1e-12,
+      "max_rise": 8.881784197001252e-16,
+      "t_at_max_rise_s": 8.953125,
+      "verdict": "非增（容差 1e-12 以上无正增步）"
+    }
+  },
+  "result3": {
+    "path": "results/result3.xlsx",
+    "sheet": "Sheet1",
+    "n_rows": 3426,
+    "n_cols": 21,
+    "t_first_s": 60.0,
+    "t_last_s": 205560.0,
+    "dt_s": 60.0,
+    "round_decimals": 4,
+    "time_axis_source": "Q2 水分场按 60 s 精确抽样（对齐偏差 0.000e+00 s）",
+    "k_readme": "result3 是**抽样**产物：60 s 是 Q2 输出步长的整数倍，半径 0…2.0 cm 即 21 列交付网格"
+  },
+  "table5": {
+    "unit": "kg/kg",
+    "r_cm": [
+      0.0,
+      0.5,
+      1.0,
+      1.5,
+      2.0
+    ],
+    "times_h": [
+      6.0,
+      12.0,
+      18.0,
+      24.0,
+      30.0,
+      36.0,
+      42.0,
+      48.0,
+      54.0
+    ],
+    "labels": [
+      "6",
+      "12",
+      "18",
+      "24",
+      "30",
+      "36",
+      "42",
+      "48",
+      "54",
+      "烘干结束时间"
+    ],
+    "values_full_precision": [
+      [
+        1.0155525234829066,
+        0.986830575794873,
+        0.9005539328330407,
+        0.7546353386675441,
+        0.5334552207406198
+      ],
+      [
+        0.45476054280498357,
+        0.4418395329854781,
+        0.4019417319635407,
+        0.32892436892719434,
+        0.1639574649149505
+      ],
+      [
+        0.2978893975601288,
+        0.29063458607891085,
+        0.2679022155316494,
+        0.22467264963968175,
+        0.08428942629063756
+      ],
+      [
+        0.23708069085713818,
+        0.23204195915089473,
+        0.2160905984203967,
+        0.18500859827072064,
+        0.0663101450979458
+      ],
+      [
+        0.2052275991027968,
+        0.20126266358618622,
+        0.1886246705055401,
+        0.16360284865475597,
+        0.05967466014123225
+      ],
+      [
+        0.18535655441187618,
+        0.1820186141333263,
+        0.17132845527092996,
+        0.1499270596505705,
+        0.056483131626945925
+      ],
+      [
+        0.17159696401920235,
+        0.16867124626721847,
+        0.15926822436208646,
+        0.14028810938573266,
+        0.05469037443959454
+      ],
+      [
+        0.1613974512431091,
+        0.15876481904360126,
+        0.1502805383981949,
+        0.13304482351205776,
+        0.05357490071052059
+      ],
+      [
+        0.15346793419773158,
+        0.1510554246401227,
+        0.14326334307489327,
+        0.1273517319500296,
+        0.052828801610069684
+      ],
+      [
+        0.150000001229737,
+        0.1476815594709855,
+        0.14018589493351058,
+        0.12484407881199389,
+        0.052534744906204224
+      ]
+    ],
+    "t_dry_h": 57.108349640475744,
+    "last_row": "烘干结束时间",
+    "last_row_time_bracket_s": [
+      205560.0,
+      205620.0,
+      0.5009784285444766
+    ],
+    "last_row_note": "「烘干结束时间」行的浓度由水分场在 t_dry 处**线性插值**得到（t_dry 一般不在 60 s 网格上）",
+    "csv_path": "results/q3_table5_moisture.csv"
+  },
+  "checks": {
+    "t_dry_crosscheck_ok": true,
+    "monotone_before_crossing": true,
+    "field_covers_t_dry": true,
+    "grid_alignment_max_err_s": 0.0,
+    "row_at_t_dry_center_kgkg": 0.150000001229737,
+    "row_at_t_dry_center_excess_kgkg": 1.2297370066693958e-09,
+    "row_at_t_dry_center_excess_time_s": 0.004187163147582392,
+    "row_at_t_dry_center_verdict": "中心列读数 0.1500，超出判据 +1.230e-09 kg/kg = +0.004 s 时间当量 —— 在**主报**网格项 ±139.7077737521031 s（亦在灵敏度口径 ±34.0492570758918 s）内，属 60 s 网格线性插值的弦曲率效应，非判据违反。【留痕·原写】中心列读数 0.1500，超出判据 +1.230e-09 kg/kg = +0.004 s 时间当量 —— 在 ±34.0 s 精度口径内，属 60 s 网格线性插值的弦曲率效应，非判据违反"
+  }
+}

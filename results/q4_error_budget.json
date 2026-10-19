@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-09-13T10:41:26",
+  "baseline_t_dry_h": 50.74544699756435,
+  "baseline_t_dry_s": 182683.60919123166,
+  "E1_latent_heat": {
+    "method": "0-D 集总对照（§11.2 (Q4-34)）；`C_s(t)` 与 `R(t)` 取自主模型，不含新的水分模型。两种读法：(a) 瞬时 δT(t)（准稳态表面平衡）；(b) 平均 ΔT（先把蒸发功率在干燥窗内做时间平均，再取常数偏移）。",
+    "borrowed_parameters": {
+      "dH_vap_J_per_kg": 2260000.0,
+      "rho_d_kg_m3": 278.7323943661972,
+      "note": "题目未给，借自文献 / 附录 4 折算式；只作量级估计，绝不进交付数值"
+    },
+    "delta_T_qs_max_K": 49.871263923029545,
+    "delta_T_qs_max_at_s": 0.0,
+    "delta_T_qs_final_K": 0.04682959752615576,
+    "P_evap_avg_W_per_m": 6.075616613173865,
+    "delta_T_avg_K": 1.9339288326357207,
+    "reading_a_instantaneous": {
+      "t_dry_h": null,
+      "reached_within_s": 259200.0,
+      "C_max_final": 0.6403784631141571,
+      "verdict": "在 72 h 窗口内未达标",
+      "note": "瞬时读法在早段把表面蒸发通量按 `C_s(0) = 2.55` 全额计入，δT 峰值 49.9 K，材料温度被压到远低于初值 —— 这是 0-D 集总的失效模式（真实药材有内部导热供热，表面不会瞬间掉到湿球温度）。该读法只作定性说明，不作为 E1 数值。"
+    },
+    "reading_b_averaged": {
+      "t_dry_h": 54.065418095377474,
+      "reached_within_s": 259200.0,
+      "C_max_final": 0.12739762535739438
+    },
+    "E1_relative": 0.06542401918289281,
+    "E1_direction": "t_dry 偏短（潜热缺失  温度偏高  D 偏高）",
+    "E1_adopted": "读法 (b)（平均 ΔT）；读法 (a) 的结果如实登记但不采用",
+    "not_main_result": true,
+    "note": "E1 的修正结果不得作为主结果（§11.6 纪律 3）"
+  },
+  "E2_end_face": {
+    "R_over_L": 0.08,
+    "area_ratio": 1.08,
+    "upper_bound_pct": 8.0,
+    "direction": "t_dry 偏长（1D 无限长漏掉端面传质）",
+    "note": "与 E1/E3 方向相反、部分相消（§11.3）；题目未给轴向数据，各向同性收缩下 R/L 不变。"
+  },
+  "E3_h_hm": {
+    "h_hm_3x3_spread_h": 4.3497875840525,
+    "h_hm_3x3_spread_pct": 8.747126475468475,
+    "direction": "双向",
+    "borrowed_params": false
+  },
+  "E4_discrete": {
+    "source": "results/q4_convergence.json",
+    "direction": "双向",
+    "grid_N400_vs_N800_t_ge_3600s": 1.7714986100494934e-05,
+    "grid_N400_vs_N800_fullwindow": 0.0005111637973786998,
+    "dt_prod_vs_finest_t_ge_3600s": 3.6693796523601385e-05,
+    "dt_prod_vs_finest_fullwindow": 0.0007044343336861658,
+    "t_dry_grid_spread_h": 0.03611111111111143,
+    "t_dry_dt_spread_h": 0.04791666666666572,
+    "statement": "t ≥ 1 h：Δξ 与 Δt 的联合离散不确定度均 < 5×10⁻⁵（② 层线）；t < 1 h：由初始边界层主导，最大差 5.11e-04（表面列 @ t=60 s）"
+  },
+  "E5_R_interp": {
+    "R_quantization_m": 1e-05,
+    "pchip_monotone_ok": true,
+    "pchip_range_ok": true,
+    "max_abs_diff_linear_vs_pchip_m": 6.717068200887133e-05,
+    "max_rel_diff": 0.0034749946862479594,
+    "quant_equivalent_pct": 0.08347245409015026,
+    "direction": "双向，小",
+    "note": "量化台阶 0.001 cm = 0.0835 % of R_min；PCHIP 通过 `0.01198 ≤ R ≤ 0.02`且 `Ṙ ≤ 0` 逐点校验（不合格则判 PCHIP 不合格，§12.2 组 5）。主口径用分段线性（§4.3），PCHIP 仅作对照。"
+  },
+  "E6_driver": {
+    "ta_scenario_spread_h": 0.7881796182034577,
+    "ca_scenario_min_h": 50.625876407401506,
+    "ca_scenario_max_h": 51.414056025604964,
+    "direction": "偏长为主（冻结压低后期驱动力）",
+    "borrowed_params": false
+  },
+  "reporting_rule": "E1–E4 分别报告，不做「总误差 = 各项相加」（方向不同、量级不同、互不独立）；论文以区间 + 方向表述（§11.1）；E1 的借用参数结果只进误差分析节。",
+  "interval_statement": "主结果 t_dry = 50.7454 h（E0 主情景、N=400、Δt=1.25/5 s）；考虑 E1（本模型缺潜热  t_dry 偏短 6.5 %  真值变长，上端 = base×(1+E1)）与 E2（本模型 1D 无限长  t_dry 偏长 ≤ +8.0 %  真值变短，下端 = base×(1−E2)）的方向性偏差后，合理区间约为 [46.69, 54.07] h（方向性上界，非统计置信区间）。"
+}

@@ -1,0 +1,315 @@
+{
+  "question": "Q2 误差分析（§10 第 4 类）",
+  "acceptance_line": 5e-05,
+  "t_dry_uncertainty": {
+    "t_dry_s": 205590.05870571267,
+    "dCmax_dt_at_crossing_meas": -2.9369216419938837e-07,
+    "amplification_measured_s_per_kgkg": 3404925.7075891797,
+    "amplification_doc_estimate": 953600.0,
+    "amplification_ratio_meas_over_doc": 3.570601622891338,
+    "why_not_doc_value": "文档 §7.4 用 LDF 首特征值 × D(0.15) 估 9.536e5 s/(kg/kg)；实测跨越点的 |dC_max/dt| = 2.937e-07 kg/(kg·s) → 放大系数 3.405e+06 s/(kg/kg)，**比文档估计大 3.57 倍**。原因：跨越点上 C_max = 0.15 但 C 的体均值更低，D 应按更低含水率取值（更小），且 D 沿演化持续下降 → 尾部实际比 LDF 估计更慢。**故 t_dry 的不确定度按实测放大系数报，不套用文档的 9.536e5**",
+    "contributions": {
+      "localization": {
+        "abs_s": 1.8131686374545097e-08,
+        "note": "线性 vs 三次 Hermite 之差；Δt_II=1/8 的括住区间仅 0.125 s"
+      },
+      "time_step_dt_II": {
+        "dC_max_window_max": 8.728214562214731e-07,
+        "implied_t_s": 2.9718922144239177,
+        "note": "Δt_II 1/8 vs 1/16 的 C_max 轨迹最大偏差 × 实测放大系数"
+      },
+      "space_grid_tail_measured": {
+        "t_dry_dr_0_02_cm": 205258.45325482177,
+        "t_dry_dr_0_01_cm": 205591.1259141436,
+        "t_dry_dr_0_005_cm": 205730.8336878957,
+        "abs_diff_N100N200_s": 332.67265932183363,
+        "abs_diff_N200N400_s": 139.7077737521031,
+        "observed_order": 1.2516910045233476,
+        "conservative_uncertainty_s": 139.7077737521031,
+        "richardson_p_measured_s": 205831.98298243777,
+        "note": "**真实的尾部网格不确定度**（不是用 t≤2 s 表面列的 6.6e-4 代理）；三档网格的 Δt 与灵敏度口径逐项相同（Δt_I=1/16、Δt_II=1/2）"
+      },
+      "space_grid_early_surface_proxy": {
+        "dC_max_proxy_at_10800s": 0.0006558485155507832,
+        "implied_t_s": 2233.1154708830636,
+        "note": "若误用 t≤2 s 表面列的网格不确定度（6.56e-4）作代理会得到 ~2.2e3 s —— **那是错的**（尾部场光滑，网格误差小两个量级）。以 space_grid_tail_measured 为准。"
+      },
+      "driver_scenario": {
+        "interval_h": [
+          56.974667355642666,
+          57.86558261373112
+        ],
+        "note": "E0/E1/E2 的 4×4 平台情景（§14.3 第 16 条）"
+      }
+    },
+    "statement": "t_dry 的**数值**不确定度（局部化 + Δt + 网格）在 10¹ s 量级；**模型/数据**的不确定度（驱动平台情景）达 10⁰–10¹ h 量级 —— 必须以「未舍入值 + 不确定度 + 情景区间」三者同时报告，**不得声称 4 位小数有效**"
+  },
+  "discrete_errors": {
+    "time_step_dt_I": {
+      "source": "results/q2_dt_convergence.json → reference.levels（以 1/128 + Richardson p=1 为基准，全窗口 t=1…10800 s × 21 半径逐点）",
+      "delivered_dt_s": 0.015625,
+      "T_max_C": 2.7232330729987098e-05,
+      "T_at": {
+        "t_s": 1306.0,
+        "r_cm": 0.0
+      },
+      "C_max_kgkg": 7.908550492974342e-05,
+      "C_at": {
+        "t_s": 1.0,
+        "r_cm": 2.0
+      },
+      "T_surface_col_max": 1.820353413961584e-05,
+      "C_surface_col_max": 7.908550492974342e-05,
+      "meets_acceptance": false,
+      "orders": {
+        "levels": [
+          "16_32",
+          "32_64",
+          "64_128"
+        ],
+        "p_T_full": [
+          0.9999715930875088,
+          0.9999856403954308
+        ],
+        "p_C_full": [
+          0.9777533070251521,
+          0.988843152272551
+        ],
+        "p_T_surface_col": [
+          0.9999514793228521,
+          0.9999755838638569
+        ],
+        "p_C_surface_col": [
+          0.9777533070251521,
+          0.988843152272551
+        ]
+      }
+    },
+    "time_step_dt_II": {
+      "source": "results/q2_dt_convergence.json → dt_II_study（窗口 t=14400…28800 s）",
+      "delivered_dt_s": 0.125,
+      "T_max_C": 1.059826464455682e-05,
+      "C_max_kgkg": 1.7456451242292559e-06,
+      "cmax_traj_max_abs_diff": 0.0,
+      "meets_acceptance": true,
+      "orders": {
+        "levels": [
+          "8_16",
+          "16_32"
+        ],
+        "p_T": [
+          0.9994985006529602
+        ],
+        "p_C": [
+          0.9999963441216132
+        ]
+      }
+    },
+    "space_grid": {
+      "source": "results/q2_convergence.json（Δr 四级，全窗口逐点）",
+      "delivered_dr_cm": 0.01,
+      "T_max_C_conservative": 3.1716388306790577e-06,
+      "C_max_kgkg_conservative": 0.0006558485155507832,
+      "T_surface_col_max": 3.1716388306790577e-06,
+      "C_surface_col_max": 0.0006558485155507832,
+      "richardson_T_max_C": 6.343291609312018e-06,
+      "richardson_C_max_kgkg": 0.0019109736393914112,
+      "richardson_T_surface_col_max": 6.343291609312018e-06,
+      "richardson_C_surface_col_max": 0.0019109736393914112,
+      "orders": {
+        "grids": [
+          "100_200",
+          "200_400",
+          "400_800"
+        ],
+        "p_T_full": [
+          1.9999905772779079,
+          2.0000015861384237
+        ],
+        "p_C_full": [
+          1.3918441283238774,
+          2.2968222324769094
+        ],
+        "p_T_surface_col": [
+          1.9999905772779079,
+          2.0000015861384237
+        ],
+        "p_C_surface_col": [
+          1.3918441283238774,
+          2.2968222324769094
+        ],
+        "note": "p 由**相邻网格差**序列给出（E_i≈|f_i−f_{i+1}|）；网格比 r=2。表面列单列（Q1 A7 的强制项）。"
+      },
+      "early_thin_layer": {
+        "note": "Q1 实测该段误差**不衰减地进入后续窗口**（§9.3-5），故必须单独实测",
+        "n_times": 2,
+        "levels": {
+          "16": {
+            "T_max": 4.206980758425516e-06,
+            "C_max": 0.0003121126314549194,
+            "C_surface_col_max": 0.0003121126314549194
+          },
+          "32": {
+            "T_max": 2.1080654519778363e-06,
+            "C_max": 0.00015756177370551683,
+            "C_surface_col_max": 0.00015756177370551683
+          },
+          "64": {
+            "T_max": 1.0549509852353367e-06,
+            "C_max": 7.908550492974342e-05,
+            "C_surface_col_max": 7.908550492974342e-05
+          },
+          "128": {
+            "T_max": 5.274754926176684e-07,
+            "C_max": 3.954275246487171e-05,
+            "C_surface_col_max": 3.954275246487171e-05
+          }
+        },
+        "criterion_C_analog": 5e-05
+      }
+    }
+  },
+  "model_errors": {
+    "energy_form_capacity_vs_product": {
+      "source": "q2_compare.json → compare2_energy_form（诊断，不进交付）",
+      "capacity_vs_product_0C_surface_1800_C": 1.316639682852717,
+      "product_ref_0C_vs_273K_surface_1800_C": 6.829484742725114,
+      "statement": "乘积形式的两档 T_ref 之差的量级与「容量形式 vs 乘积形式」之差同量级 → **该形式不满足参考温度不变性，不可用**（§3.1.2）"
+    },
+    "moisture_form_dC_vs_rhoC": {
+      "source": "q2_compare.json → compare3_moisture_form",
+      "theory_rate_ratio_at_C_2_55": 0.749462695732269,
+      "t_dry_ratio_rhoC_over_dC": 1.077138634465437,
+      "t_dry_diff_h": 4.405282975341316,
+      "statement": "∂(ρC)/∂t 形式在 C=2.55 处速率差 33.4 %（§3.2），已在场与 t_dry 上量化"
+    },
+    "property_set_discontinuity": {
+      "source": "q2_compare.json → compare4_property_set",
+      "max_abs_T_diff_C_3h": 1.9894571608302272,
+      "max_abs_C_diff_3h": 0.5190873121030859,
+      "statement": "附录 2/3 是两套并列经验公式（§6.1）；Q1 与 Q2 各自独立起算，**不做连续性检验**"
+    },
+    "latent_heat_missing": {
+      "source": "建模文档 §3.5 定理 1 / §14.3 第 13 条（不可实测量化，给方向）",
+      "direction": "本模型恒温段预测 T ≡ T_a（= 上界）→ D 被 e^(−3850/T) 抬高 → **t_dry 偏短**",
+      "magnitude_reference": "Q1 登记的潜热/显热比 5.2~8.9",
+      "status": "不可实现（题目未给汽化潜热与吸附等温线）→ 以量化失效条件替代"
+    },
+    "1d_axisymmetric": {
+      "source": "Q1 登记的 2D 端面效应（R/L = 0.08）",
+      "status": "**未在变物性下重做**（§14.3 第 15 条）——如实登记，不作数值声明"
+    }
+  },
+  "data_errors": {
+    "attachment1_interpolation": {
+      "design": "附件 1 分段线性插值（主）vs 零阶保持（左端采样值）",
+      "max_T_diff_C": 0.18443891129275158,
+      "max_C_diff_kgkg": 0.0018244451082760627,
+      "T_surface_col_max": 0.18443891129275158,
+      "C_surface_col_max": 0.0018244451082760627,
+      "note": "零阶保持引入最长 60 s 的**系统性滞后**（不是随机误差），方向：驱动量偏低 → 温度偏低、干燥偏慢。主口径取分段线性（与 Q1 §6.1 一致）。"
+    },
+    "attachment1_freeze_extrapolation": {
+      "source": "results/q2_scenarios.json（E0/E1/E2 的 4×4 平台情景）",
+      "t_dry_E0_s": 205591.1259141436,
+      "t_dry_interval_s": [
+        205108.8024803136,
+        208316.09740943203
+      ],
+      "t_dry_interval_h": [
+        56.974667355642666,
+        57.86558261373112
+      ],
+      "statement": "决策 1（冻结末值）的敏感性以**情景区间**表述，不报单一值（§14.3 第 16 条）"
+    },
+    "attachment1_sampling": {
+      "dt_s": 60.0,
+      "n": 241,
+      "statement": "附件 1 只有 60 s 采样；段内用分段线性 → 截断误差为 0（线性函数）；真实曲线若弯曲则误差 O(Δ²T_a) 不可估（题目未给更高采样）"
+    }
+  },
+  "parameter_errors": {
+    "source": "results/q2_sensitivity.json（题目未给误差棒 → 扫描代替）",
+    "note": "h、h_m 是**推断项**（附录 3 未给，沿用附录 2），必须扫描；D₀/β/E_D 为附录 3 给定值，扫描用于量化敏感方向与量级",
+    "t_dry_baseline_h": 57.10864608726211,
+    "scans": {
+      "h": {
+        "1.0": 57.10864608726211,
+        "0.5": 57.18861145706967,
+        "2.0": 57.06974068550125
+      },
+      "hm": {
+        "1.0": 57.10864608726211,
+        "0.5": 64.60378090897665,
+        "2.0": 54.27203462480427
+      },
+      "D0": {
+        "1.0": 57.10864608726211,
+        "0.5": 108.21375104815253,
+        "2.0": 32.36056071647249
+      },
+      "beta": {
+        "0.45": 57.10864608726211,
+        "0.40": 44.22008542057612,
+        "0.50": 74.91711651898974
+      },
+      "ED": {
+        "3850": 57.10864608726211,
+        "3657.5": 34.838024114085634,
+        "4042.5": 98.63059458181566
+      },
+      "omega": {
+        "1.0": 57.10864608726211,
+        "0.9": 57.09942697224675,
+        "1.1": 57.11793450163556
+      },
+      "cp": {
+        "1.0": 57.10864608726211,
+        "0.9": 57.09942697224675,
+        "1.1": 57.11793450163556
+      },
+      "hmD0": {
+        "0.5x0.5": 114.0234465672002,
+        "0.5x2": 41.315005261769905,
+        "2x0.5": 106.24577011777203,
+        "2x2": 28.66542129184717
+      }
+    }
+  },
+  "dominant_source_verdict": {
+    "T_field": {
+      "time_step_max_C": 2.7232330729987098e-05,
+      "space_max_C": 3.1716388306790577e-06,
+      "dominant": "时间步",
+      "ratio_time_over_space": 8.586201703223747
+    },
+    "C_field": {
+      "time_step_max": 7.908550492974342e-05,
+      "space_max": 0.0006558485155507832,
+      "dominant": "空间网格",
+      "ratio_time_over_space": 0.12058501781211965,
+      "surface_col": {
+        "time_max": 7.908550492974342e-05,
+        "space_max": 0.0006558485155507832,
+        "note": "表面列单列（Q1 A7 强制项）"
+      }
+    },
+    "note": "**本判定完全由实测数值给出，未照搬 Q1 的任何结论**（§10 第 4 类的要求）。比较对象：交付口径（Δt=1/64、Δr=0.01 cm）下的时间离散误差 vs 网格（最细一对）不确定度。"
+  },
+  "surface_column_uncertainty": {
+    "note": "**交付值的不确定度**必须随结果报告（Q1 A10.1 的同族要求）",
+    "grid_conservative_C_kgkg": 0.0006558485155507832,
+    "grid_richardson_C_kgkg": 0.0019109736393914112,
+    "time_step_at_1_64_C_kgkg": 7.908550492974342e-05,
+    "per_time_series": "results/q2_dtI_surface_column_error.csv",
+    "statement": "表面列（r = 2.0 cm）的网格不确定度与时间步残差**单列**；超出 ① 层分辨率（1e-4）时不得声称该列四位有效"
+  },
+  "N_A_items": {
+    "caseA_vs_caseB_long_window": "Q2 不重跑长时（§10.3）：口径 B 为固定 Neumann 通量、无 C_s 反馈 → 离散极值原理不成立、C_max ≤ 0.15 不可达",
+    "bessel_analytic_direct": "变系数方程无 Bessel 级数解 → 由「对比 1 退化回归」替代",
+    "latent_heat_coupling": "题目未给潜热与等温线 → 以量化失效条件替代（§3.5 定理 1）",
+    "q4_shrinking_domain": "属 Q4 范围",
+    "2d_axisymmetric_redo": "未在变物性下重做（§14.3 第 15 条）",
+    "parameter_fitting": "题目未给误差棒 → 不做任何参数拟合（§14.4 第 21 条）"
+  }
+}

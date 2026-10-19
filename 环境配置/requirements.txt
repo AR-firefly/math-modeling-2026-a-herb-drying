@@ -1,0 +1,14 @@
+# 2026 国赛 A 题《药材的烘干问题》—— 运行环境依赖
+# 由本队开发机实测导出版本号（2026-09-12）
+# 安装：pip install -r requirements.txt
+#
+# 说明：以下版本号为开发机实际使用的版本。
+#       若评委环境不便安装同版本，可只保证主版本号一致（numpy 2.x / pandas 3.x / matplotlib 3.x）。
+#       核心求解（Q1~Q4）只依赖 numpy；表格读写依赖 openpyxl；
+#       出图依赖 matplotlib（仅当运行作图脚本时才需要）。
+
+numpy==2.4.6
+scipy==1.17.1
+pandas==3.0.3
+matplotlib==3.11.0
+openpyxl==3.1.5

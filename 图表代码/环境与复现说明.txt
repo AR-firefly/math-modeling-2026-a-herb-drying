@@ -1,0 +1,56 @@
+环境与复现说明
+================
+
+⚠️ 编号说明：本包中的“图9/图10”是开发时的内部编号，对应论文图10/图11；以论文图题为准。
+
+一、本包出图所用的确切环境（在此环境下逐字节复现）
+
+    Python       3.13.7
+    numpy        2.4.6
+    pandas       3.0.3
+    matplotlib   3.11.0
+    scipy        1.17.1
+    openpyxl     3.1.5
+
+  三个子包各带 requirements.txt，已按上表钉死版本（==，不是 >=）。
+  安装：pip install -r <子包目录>/requirements.txt
+
+二、字体（最关键的一条）
+
+  脚本使用的中文字体按以下顺序自动挑选：
+    图4 / 图5          ：SimHei → Microsoft YaHei → Noto Sans CJK SC → Arial Unicode MS
+    图9 / 图10 / 误差分析图：Microsoft YaHei → SimHei → Noto Sans CJK SC → Arial Unicode MS
+  本机实际命中：图4 / 图5 = SimHei；图9 / 图10 / 误差分析图 = Microsoft YaHei。
+
+  ⚠️ 这两个字体都是 Windows 中文版自带。若运行环境里没有其中任何一个，
+     matplotlib 会回退到 DejaVu Sans，中文会显示成方框（豆腐块），
+     图面与本文所述结果不再一致。
+  ⇒ 要在非 Windows（Linux / macOS）上复现，请先安装等价中文字体
+     （如 Noto Sans CJK SC / Source Han Sans SC），脚本会自动选中。
+
+三、确定性实测结论
+
+  同一环境连续跑两遍，六张 PNG 全部逐字节相同：
+     图4_温度场与水分场时空演化.png      4828 x 3723   ✅
+     图5_表面热通量与传质通量演化.png    4740 x 4139   ✅
+     fig_q3_hovmoller.png               4200 x 3657   ✅
+     fig_q3_drying_rate.png             4733 x 2940   ✅
+     图1_整体误差指标.png                4410 x 1502   ✅
+     图2_数值误差来源.png                3394 x 1823   ✅
+
+  ⚠️ PDF 例外：fig_q3_hovmoller.pdf / fig_q3_drying_rate.pdf 内嵌生成时间戳，
+     同一脚本每次运行字节都不同（图纸内容相同，只是元数据里的时间戳变了）。
+     要逐字节比对，请比对 PNG；PDF 只保证图纸内容一致。
+
+四、脚本的路径约定
+
+  全部脚本用 Path(__file__) 定位数据与输出，与"当前工作目录"无关：
+  整个文件夹可任意搬移，也可从任意目录启动。数据文件必须与本包的 .py 同目录。
+
+五、数据来源（各图取数入口）
+
+  图4    result2_full_60s.xlsx                      （温度 / 水分浓度两个工作表，官方宽表）
+  图5    图5_表面通量数据.csv + fig09_q1_flux_balance.json（溯源件，运行不读）
+  图9    result3.xlsx                               （官方宽表）
+  图10   W_history.csv                              （求解器落盘的总水量时程）
+  误差分析图：数据直接写在两个绘图脚本里，不需要外部数据文件。

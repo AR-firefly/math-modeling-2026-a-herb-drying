@@ -1,0 +1,27 @@
+{
+  "_meta": {
+    "problem_id": "A",
+    "scope": "仅求解问题二、问题三（用户 custom_requirements 指定）",
+    "note": "题面参数 < 20（且仅取 Q2/Q3 相关），未建 PROBLEM_FACTS.json；本文件登记附件数据事实与题目给定公式/常量"
+  },
+  "variables": [
+    {"name": "烘房温度 T_air", "role": "observed", "unit": "℃", "range": [28.0, 50.165], "granularity": "60s", "censored": {"kind": "none", "at": null}, "source": "附件1.xlsx 列'温度'（241 行, 0~14400s）", "has_data": true},
+    {"name": "烘房水分浓度 C_air", "role": "observed", "unit": "kg/kg", "range": [0.01963, 0.05007], "granularity": "60s", "censored": {"kind": "none", "at": null}, "source": "附件1.xlsx 列'水分浓度'（241 行, 0~14400s）", "has_data": true},
+    {"name": "药材半径 R(t)", "role": "observed", "unit": "cm", "range": [1.198, 2.000], "granularity": "1800s", "censored": {"kind": "none", "at": null}, "source": "附件2.xlsx（145 行, 0~259200s）— 问题四才用（尺寸变化），问题二/三按恒定半径 2cm", "has_data": true},
+    {"name": "药材温度 T(r,t)", "role": "assumed", "unit": "℃/K", "range": [null, null], "granularity": "求解输出", "censored": {"kind": "none", "at": null}, "source": "待求 PDE 解", "has_data": false},
+    {"name": "药材水分浓度 C(r,t)", "role": "assumed", "unit": "kg/kg", "range": [null, null], "granularity": "求解输出", "censored": {"kind": "none", "at": null}, "source": "待求 PDE 解；初值 2.55", "has_data": false}
+  ],
+  "given": [
+    {"name": "药材几何-长", "kind": "constant", "raw_quote": "某中药材形状大致呈圆柱形，长为 25 cm，半径为 2 cm", "value": 0.25, "unit": "m", "must_use_verbatim": true},
+    {"name": "药材几何-半径", "kind": "constant", "raw_quote": "半径为 2 cm", "value": 0.02, "unit": "m", "must_use_verbatim": true},
+    {"name": "初始温度", "kind": "constant", "raw_quote": "烘干开始时，药材的温度为 28℃", "value": 28.0, "unit": "℃", "must_use_verbatim": true},
+    {"name": "初始水分浓度", "kind": "constant", "raw_quote": "水分浓度（即干基含水率）为 2.55 kg/kg", "value": 2.55, "unit": "kg/kg", "must_use_verbatim": true},
+    {"name": "对流换热系数 h", "kind": "constant", "raw_quote": "对流换热系数为 25 W/(m²·K)", "value": 25.0, "unit": "W/(m^2·K)", "must_use_verbatim": true},
+    {"name": "对流传质系数 h_m", "kind": "constant", "raw_quote": "对流传质系数为 8×10⁻⁷ m/s", "value": 8e-7, "unit": "m/s", "must_use_verbatim": true},
+    {"name": "问题三烘干终点阈值", "kind": "constant", "raw_quote": "药材各处的水分浓度应低于 0.15 kg/kg", "value": 0.15, "unit": "kg/kg", "must_use_verbatim": true},
+    {"name": "密度经验公式(Q2/Q3)", "kind": "formula", "raw_quote": "ρ = 650 + 128C", "form": "rho = 650 + 128*C", "acts_on": "密度 rho 关于水分浓度 C 的线性关系", "must_use_verbatim": true},
+    {"name": "比热容经验公式(Q2/Q3)", "kind": "formula", "raw_quote": "c_p = 1450 + 2736·C/(C+1)", "form": "cp = 1450 + 2736*C/(C+1)", "acts_on": "比热容 cp 关于 C/(C+1) 的关系（不是 C 的线性）", "must_use_verbatim": true},
+    {"name": "热传导系数经验公式(Q2/Q3)", "kind": "formula", "raw_quote": "k = 0.21 + 0.38·C/(C+1)", "form": "k = 0.21 + 0.38*C/(C+1)", "acts_on": "热传导系数 k 关于 C/(C+1) 的关系", "must_use_verbatim": true},
+    {"name": "水分扩散系数经验公式(Q2/Q3)", "kind": "formula", "raw_quote": "D = 2.4×10⁻³ e^{-0.45/C} e^{-3850/T}", "form": "D = 2.4e-3 * exp(-0.45/C) * exp(-3850/T)", "acts_on": "扩散系数 D 同时作用于 C（Arrhenius 型 e^{-0.45/C}）与温度 T（e^{-3850/T}，T 为绝对温度 K）；不是仅温度或仅浓度", "must_use_verbatim": true}
+  ]
+}

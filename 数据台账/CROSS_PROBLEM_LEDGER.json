@@ -1,0 +1,74 @@
+{
+  "scope_note": "CUSTOM_REQUIREMENTS.md limits this run to problem 2 and problem 3 only. Original problem numbering is preserved; problems 1 and 4 are intentionally absent.",
+  "problems": [
+    {
+      "id": "Q2",
+      "title": "药材烘干过程中的温度与水分浓度变化模型",
+      "solves": ["T(r,t)", "C(r,t)"],
+      "time_span_seconds": [0, 10800],
+      "deliverables": ["table3_temperature", "table4_moisture", "output/result2.xlsx", "output/result2_full_60s.xlsx"],
+      "capability_ids": ["P2-C1", "P2-C2", "P2-C3"]
+    },
+    {
+      "id": "Q3",
+      "title": "烘干所需时间模型（首达时刻）",
+      "solves": ["t_star"],
+      "time_span_seconds": [0, 205958],
+      "deliverables": ["table5_moisture_6h", "output/result3.xlsx"],
+      "capability_ids": ["P3-C1", "P3-C2"]
+    }
+  ],
+  "transfers": [
+    {
+      "from": "Q2",
+      "to": "Q3",
+      "quantity": "solver_configuration",
+      "items": ["R=0.02", "T0=28.0", "C0=2.55", "h=25.0", "hm=8e-7", "N=21", "dt=1.0", "FACE_D=kirchhoff", "FACE_K=arith", "PICARD_ITERS=2", "AIR_EXTRAP=hold_last"],
+      "consistency_rule": "Q3 must use the identical solver instance and parameter set as Q2. The Q3 field evaluated at t=10800 s must equal the Q2 field at t=10800 s to within 1e-12 relative difference.",
+      "violation_meaning": "any discrepancy indicates configuration drift between the two runs, not physics"
+    },
+    {
+      "from": "Q2",
+      "to": "Q3",
+      "quantity": "T(r,t), C(r,t) fields",
+      "consistency_rule": "Q3 extends the same fields in time; it introduces the terminal criterion only. No governing equation, property law, boundary condition or discretisation may change.",
+      "new_in_Q3": ["C_crit=0.15", "t_star = min{t : max_r C(r,t) < C_crit}", "linear interpolation of the crossing instant", "output granularity 60 s instead of 1 s"]
+    }
+  ],
+  "observed": [
+    {
+      "problem": "Q3",
+      "quantity": "t_star",
+      "value_seconds": 205957.6284,
+      "value_hours": 57.2105,
+      "source": "modeling-stage numerical prototype, N=21, dt=1 s, Kirchhoff face diffusivity",
+      "status": "prototype_reference_not_authoritative",
+      "authoritative_source": "comp-code stage output; if comp-code deviates by more than 2 percent, follow anomaly plan A5",
+      "bound_kind": "lower_bound",
+      "bound_reason": "latent heat of vaporisation is neglected, so T is overestimated, D is overestimated, and t_star is therefore a lower bound of the true drying time"
+    },
+    {
+      "problem": "Q3",
+      "quantity": "t_star at N=41",
+      "value_hours": 57.1807,
+      "relative_difference_vs_N21": 0.00052,
+      "source": "grid convergence check"
+    }
+  ],
+  "shared_assumptions": [
+    {"key": "GEOMETRY", "value": "cylinder_1d_radial", "applies_to": ["Q2", "Q3"]},
+    {"key": "PROPS", "value": "appendix3", "applies_to": ["Q2", "Q3"]},
+    {"key": "LATENT_HEAT_COUPLING", "value": false, "applies_to": ["Q2", "Q3"]},
+    {"key": "AIR_EXTRAP", "value": "hold_last", "applies_to": ["Q3"], "note": "inactive for Q2 because its 3 h span lies inside the 14400 s data window"},
+    {"key": "MASS_BC", "value": "dry_basis_consistent", "applies_to": ["Q2", "Q3"]},
+    {"key": "SHRINKAGE", "value": false, "applies_to": ["Q2", "Q3"]}
+  ],
+  "unit_ledger": {
+    "temperature_in_properties": "absolute temperature K, i.e. T_K = T_degC + 273.15, mandated verbatim by appendix 3",
+    "temperature_in_fields_and_output": "degree Celsius",
+    "moisture_concentration": "kg/kg dry basis, identical unit for herb and kiln air",
+    "distance_in_model": "m",
+    "distance_in_output_headers": "cm",
+    "time_in_model_and_output": "s"
+  }
+}

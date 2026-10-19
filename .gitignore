@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+Q2/output/
+Q2/figures/
+Q3/output/
+Q3/figures/
+results/_dryrun_q4/
+results/q2_parts/
+results/_q3_selftest_out/
+results/_dryrun_q2/
